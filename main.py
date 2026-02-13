@@ -32,18 +32,22 @@ def get_prices():
     results = {}
     for name, symbol in TICKERS.items():
         try:
-            ticker_data = yf.Ticker(symbol)
-            # On récupère l'historique des 2 derniers jours avec un intervalle de 1 heure
-            df = ticker_data.history(period="2d", interval="1h")
+            ticker = yf.Ticker(symbol)
+            # On récupère l'historique (1 point par heure sur les derniers jours)
+            hist = ticker.history(period="5d", interval="1h")
             
-            if not df.empty:
-                # On prend le prix de clôture de la dernière heure complète
-                prix_heure = df['Close'].iloc[-1]
-                results[name] = round(float(prix_heure), 2)
-            else:
-                results[name] = "Indisponible"
-        except Exception as e:
-            results[name] = 0
+            if not hist.empty:
+                # Le prix actuel
+                current_price = round(float(hist['Close'].iloc[-1]), 2)
+                # On récupère les 10 derniers points de clôture pour le graphique
+                sparkline = hist['Close'].tail(10).tolist()
+                
+                results[name] = {
+                    "price": current_price,
+                    "history": [round(float(p), 2) for p in sparkline]
+                }
+        except:
+            results[name] = {"price": 0, "history": []}
     return results
 
 @app.get("/")
