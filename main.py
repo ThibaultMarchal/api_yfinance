@@ -4,27 +4,30 @@ import yfinance as yf
 
 app = FastAPI()
 
+# Configuration CORS ultra-permissive pour le développement
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
+    allow_origins=["*"],  # Autorise absolument tout le monde
+    allow_credentials=True,
+    allow_methods=["*"],  # Autorise GET, POST, etc.
     allow_headers=["*"],
 )
 
-# Liste étendue du CAC 40 (ajoute les autres au besoin)
 TICKERS = {
-    "LVMH": "MC.PA", "Total": "TTE.PA", "Airbus": "AIR.PA", "Sanofi": "SAN.PA",
-    "Loreal": "OR.PA", "BNP": "BNP.PA", "Hermes": "RMS.PA", "AXA": "CS.PA",
-    "Renault": "RNO.PA", "Orange": "ORA.PA", "Danone": "BN.PA"
+    "LVMH": "MC.PA", "TOTAL": "TTE.PA", "AIRBUS": "AIR.PA",
+    "SANOFI": "SAN.PA", "LOREAL": "OR.PA", "BNP": "BNP.PA"
 }
 
 @app.get("/prix")
 def get_prices():
-    results = {}
-    # On récupère les données par groupe pour aller plus vite
-    symbols = list(TICKERS.values())
-    data = yf.download(symbols, period="1d", interval="1m", progress=False)['Close'].iloc[-1]
-    
-    for name, symbol in TICKERS.items():
-        results[name] = round(float(data[symbol]), 2)
-    return results
+    try:
+        symbols = list(TICKERS.values())
+        data = yf.download(symbols, period="1d", interval="1m", progress=False)['Close'].iloc[-1]
+        results = {name: round(float(data[symbol]), 2) for name, symbol in TICKERS.items()}
+        return results
+    except Exception as e:
+        return {"error": str(e)}
+
+@app.get("/")
+def home():
+    return {"message": "API active"}
