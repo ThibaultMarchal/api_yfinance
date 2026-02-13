@@ -28,25 +28,22 @@ TICKERS = {
 }
 
 @app.get("/prix")
-@app.get("/prix")
-# Dans ton main.py
-@app.get("/prix")
 def get_prices():
     results = {}
     for name, symbol in TICKERS.items():
         try:
-            t = yf.Ticker(symbol)
-            # On force la récupération du prix actuel uniquement
-            val = t.fast_info['last_price']
+            ticker_data = yf.Ticker(symbol)
+            # On récupère l'historique des 2 derniers jours avec un intervalle de 1 heure
+            df = ticker_data.history(period="2d", interval="1h")
             
-            # Sécurité anti-bug (si le prix est > 10 000 ou nul)
-            if val is None or val > 10000:
-                # Méthode de secours
-                val = t.history(period="1d")['Close'].iloc[-1]
-            
-            results[name] = round(float(val), 2)
-        except:
-            results[name] = 0 # Évite d'envoyer un chiffre délirant
+            if not df.empty:
+                # On prend le prix de clôture de la dernière heure complète
+                prix_heure = df['Close'].iloc[-1]
+                results[name] = round(float(prix_heure), 2)
+            else:
+                results[name] = "Indisponible"
+        except Exception as e:
+            results[name] = 0
     return results
 
 @app.get("/")
