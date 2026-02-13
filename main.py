@@ -28,14 +28,26 @@ TICKERS = {
 }
 
 @app.get("/prix")
+@app.get("/prix")
 def get_prices():
-    try:
-        symbols = list(TICKERS.values())
-        data = yf.download(symbols, period="1d", interval="1m", progress=False)['Close'].iloc[-1]
-        results = {name: round(float(data[symbol]), 2) for name, symbol in TICKERS.items()}
-        return results
-    except Exception as e:
-        return {"error": str(e)}
+    results = {}
+    for name, symbol in TICKERS.items():
+        try:
+            # On récupère les données du jour
+            ticker_data = yf.Ticker(symbol)
+            # 'fast_info' est plus léger et évite souvent les bugs de colonnes
+            price = ticker_data.fast_info['last_price']
+            
+            # Sécurité : si le prix est délirant, on essaie une autre méthode
+            if price > 10000 and "PA" in symbol: # Une action CAC40 ne dépasse pas 10k€ (sauf Hermès qui est vers 2k€)
+                hist = ticker_data.history(period="1d")
+                price = hist['Close'].iloc[-1]
+
+            results[name] = round(float(price), 2)
+        except Exception as e:
+            print(f"Erreur sur {name}: {e}")
+            results[name] = "Indisponible"
+    return results
 
 @app.get("/")
 def home():
