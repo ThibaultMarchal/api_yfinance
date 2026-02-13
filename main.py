@@ -14,8 +14,17 @@ app.add_middleware(
 )
 
 TICKERS = {
-    "LVMH": "MC.PA", "TOTAL": "TTE.PA", "AIRBUS": "AIR.PA",
-    "SANOFI": "SAN.PA", "LOREAL": "OR.PA", "BNP": "BNP.PA"
+    "LVMH": "MC.PA", "TOTALENERGIES": "TTE.PA", "AIRBUS": "AIR.PA",
+    "SANOFI": "SAN.PA", "L'OREAL": "OR.PA", "BNP PARIBAS": "BNP.PA",
+    "HERMES": "RMS.PA", "AXA": "CS.PA", "VINCI": "DG.PA",
+    "SCHNEIDER": "SU.PA", "SAFRAN": "SAF.PA", "AIR LIQUIDE": "AI.PA",
+    "STELLANTIS": "STLAP.PA", "ESSILOR": "EL.PA", "DANONE": "BN.PA",
+    "RENAULT": "RNO.PA", "ORANGE": "ORA.PA", "CARREFOUR": "CA.PA",
+    "MICHELIN": "ML.PA", "SOC GENERALE": "GLE.PA", "KERING": "KER.PA",
+    "THALES": "HO.PA", "VEOLIA": "VIE.PA", "SAINT GOBAIN": "SGO.PA",
+    "PUBLICIS": "PUB.PA", "EDENRED": "EDEN.PA", "ENGIE": "ENGI.PA",
+    "LEGRAND": "LR.PA", "BOUYGUES": "EN.PA", "ALSTOM": "ALO.PA",
+    "PERNOD RICARD": "RI.PA", "CAPGEMINI": "CAP.PA", "DASSAULT": "AM.PA"
 }
 
 @app.get("/prix")
